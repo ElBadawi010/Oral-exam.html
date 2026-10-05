@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced MCQ Exam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #008080; --secondary: #004d4d; --accent: #ff9800; --bg: #f0f4f8; --text: #2d3436; --white: #ffffff; --success: #2ecc71; --error: #e74c3c; --gray: #7f8fa6; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: var(--white); width: 95%; max-width: 700px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; text-align: center; position: relative; }
+        
+        header h1 { color: var(--primary); margin: 0; font-size: 1.4rem; letter-spacing: 0.5px; }
+        .btn { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px 30px; font-size: 1rem; border-radius: 50px; cursor: pointer; font-family: 'Poppins', sans-serif; margin-top: 15px; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,128,128,0.3); font-weight: 600; width: 100%; max-width: 250px; }
+        .btn:hover { transform: scale(1.02); }
+        .btn-gray { background: var(--gray); box-shadow: 0 4px 15px rgba(127,143,166,0.3); }
+        .btn-gray:hover { background: #718093; }
+        .btn-warning { background: linear-gradient(45deg, #e67e22, #d35400); box-shadow: 0 4px 15px rgba(230,126,34,0.3); font-family: 'Cairo', sans-serif; font-size: 1.1rem; max-width: 100%;}
+        
+        .nav-buttons { display: flex; gap: 15px; justify-content: space-between; margin-top: 20px; }
+        .nav-buttons .btn { margin-top: 0; max-width: 48%; }
+        
+        .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; gap: 15px;}
+        .question-box { font-size: 1.1rem; font-weight: 600; text-align: left; color: var(--secondary); line-height: 1.5; margin: 0; flex-grow: 1; }
+        
+        .badge { display: inline-block; padding: 5px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: white; white-space: nowrap;}
+        .badge-easy { background-color: #2ecc71; }
+        .badge-medium { background-color: #f1c40f; color: #333; }
+        .badge-hard { background-color: #e74c3c; }
+        
+        .difficulty-selector { width: 100%; max-width: 250px; padding: 10px; margin: 15px auto; border-radius: 8px; border: 2px solid var(--primary); font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--secondary); outline: none; cursor: pointer; background: #f8f9fa; }
+        
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { background: var(--white); border: 2px solid #e0e0e0; padding: 15px; border-radius: 12px; cursor: pointer; text-align: left; transition: 0.3s; font-weight: 500; color: #555; position: relative; }
+        .option-btn:hover:not(.disabled) { background: #f9f9f9; border-color: var(--primary); }
+        .option-btn.correct { background: #d4edda; border-color: var(--success); color: #155724; }
+        .option-btn.wrong { background: #f8d7da; border-color: var(--error); color: #721c24; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.9; }
+        
+        .explanation-box { display: none; background: #e8f4f8; border-right: 5px solid var(--primary); padding: 15px; margin-top: 20px; text-align: right; direction: rtl; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 1rem; line-height: 1.6; }
+        
+        .screen { display: none; animation: fadeIn 0.4s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .progress-bar { width: 100%; height: 8px; background: #eee; margin: 20px 0; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
+        
+        #retry-container { background: #fff3e0; border: 1px solid #ffe0b2; padding: 15px; border-radius: 12px; margin-top: 15px; }
+        #retry-container p { font-family: 'Cairo', sans-serif; color: #d35400; margin: 0 0 10px 0; font-weight: 700; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="start-screen" class="screen active">
+        <header>
+            <h1>ElBadawi Med Academy 🩺</h1>
+            <p>Dr. El-Sayed El-Badawy</p>
+        </header>
+        <div style="margin: 25px 0;"><img src="https://cdn-icons-png.flaticon.com/512/3063/3063205.png" width="90"></div>
+        <h3 id="quiz-title-display" style="color:var(--accent);">Medical Exam</h3>
+        <p>30 MCQs | Oral Survey 1</p>
+        
+        <select id="difficulty-filter" class="difficulty-selector">
+            <option value="all">🌐 All Questions (Mix)</option>
+            <option value="easy">🟢 Easy Only</option>
+            <option value="medium">🟡 Medium Only</option>
+            <option value="hard">🔴 Hard (Clinical Scenarios)</option>
+        </select>
+
+        <button class="btn" onclick="startQuiz()">Start Challenge</button>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
+        <div id="timer" style="color:var(--error); font-weight:bold; margin-bottom:10px;"></div>
+        
+        <div class="question-header">
+            <div class="question-box" id="question-text"></div>
+            <span id="difficulty-badge" class="badge"></span>
+        </div>
+        
+        <div class="options" id="options-container"></div>
+        
+        <div id="explanation" class="explanation-box">
+            <strong>💡 دكتور السيد بيوضحلك:</strong><br>
+            <span id="explanation-text"></span>
+        </div>
+        
+        <div class="nav-buttons">
+            <button id="prev-btn" class="btn btn-gray" style="display:none;" onclick="prevQuestion()">⬅️ Previous</button>
+            <button id="next-btn" class="btn" style="display:none;" onclick="nextQuestion()">Next Question ➡️</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h2>Exam Complete!</h2>
+        <div style="font-size:3rem; font-weight:bold; color:var(--primary);" id="final-score">0%</div>
+        <div style="background:var(--accent); color:white; padding:5px 20px; border-radius:20px; font-weight:700; margin-bottom:20px; display:inline-block;" id="rank-text">Student</div>
+        
+        <div id="retry-container" style="display: none;">
+            <p>عندك بعض الأخطاء محتاج تراجعها وتتعلم منها يا دكتور!</p>
+            <button id="retry-btn" class="btn btn-warning" onclick="retryMistakes()">أعد محاولة الأسئلة الخاطئة 🔄</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn" onclick="location.reload()">Return to Main Menu 🔄</button>
+        </div>
+    </div>
+    <footer style="margin-top:25px; font-size:0.8rem; color:#aaa;">Prepared by: ElBadawi Med Academy</footer>
+</div>
+
+<audio id="sound-correct" src="https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+    const quizTitle = "Basic Properties & Model Organisms";
+
+    const mcqQuestions = [
+        { 
+            question: "According to the hierarchical organization of living systems, which level immediately follows the 'Organismal level'?", 
+            options: ["Cellular level", "Populational level", "Ecosystem level", "Molecular level"], 
+            correct: 1, 
+            explanation: "التنظيم الهرمي (Hierarchical organization) بيبدأ بـ Cellular وبعدين Organismal وبعده بييجي الـ Populational level. [L1]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Which of the following constitutes the 'recipes' for constructing cellular structures and the directions for running cellular activities?", 
+            options: ["Enzymes", "Motor proteins", "Genes (constructed of DNA)", "Organelles"], 
+            correct: 2, 
+            explanation: "الجينات (Genes) هي اللي بتمثل وصفات بناء الخلايا (recipes) وبتتحكم في أنشطتها عشان فيها الـ Genetic Program. [L1]",
+            difficulty: "easy"
+        },
+        { 
+            question: "During cell reproduction, a human oocyte undergoes a highly unequal division. What is the result of this unequal division?", 
+            options: ["Two identical daughter cells are formed.", "One cell retains nearly all of the cytoplasm, while the other is a nonfunctional remnant.", "Both cells lose their genetic material.", "The cell divides into four equal parts."], 
+            correct: 1, 
+            explanation: "البويضة (oocyte) بتنقسم بشكل غير متساوي (highly unequal division)، خلية بتاخد تقريباً كل الـ cytoplasm، والتانية بتبقى بقايا غير فعالة. [L1]",
+            difficulty: "medium"
+        },
+        { 
+            question: "In cellular metabolism, which pathway breaks down foodstuffs into smaller molecules to generate a useful form of energy?", 
+            options: ["Anabolic pathways", "Catabolic pathways", "Photosynthetic pathways", "Replication pathways"], 
+            correct: 1, 
+            explanation: "الـ Catabolic pathways (مسارات الهدم) هي اللي بتكسر الأكل لجزيئات أصغر عشان تطلع طاقة (useful form of energy) للخلية. [L1]",
+            difficulty: "easy"
+        },
+        { 
+            question: "The sum total of all the chemical reactions occurring in a cell represents its:", 
+            options: ["Self-regulation", "Metabolism", "Genetic program", "Evolution"], 
+            correct: 1, 
+            explanation: "مجموع كل التفاعلات الكيميائية اللي بتحصل في الخلية بيُعرف بالـ Metabolism (الأيض أو التمثيل الغذائي). [L1]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Mechanical activities within cells, such as transporting materials and assembling structures, are primarily initiated by changes in the shape of which molecules?", 
+            options: ["Receptors", "Motor proteins", "Lipids", "Carbohydrates"], 
+            correct: 1, 
+            explanation: "الأنشطة الحركية (Mechanical activities) جوه الخلية بتعتمد على تغير شكل بروتينات الحركة (Motor proteins). [L1]",
+            difficulty: "medium"
+        },
+        { 
+            question: "How do cells primarily interact with and respond to specific stimuli in their environment?", 
+            options: ["By undergoing immediate apoptosis", "Through random mutations", "Through receptors located on their surfaces", "By releasing DNA into the environment"], 
+            correct: 2, 
+            explanation: "الخلايا بتستجيب للمحفزات (Stimuli) من البيئة عن طريق الـ Receptors (المستقبلات) الموجودة على سطحها. [L1]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Which of the following is a primary characteristic that distinguishes eukaryotic cells from prokaryotic cells?", 
+            options: ["Eukaryotes have a cell wall made of peptidoglycan.", "Eukaryotes divide strictly by binary fission.", "Eukaryotes have a nuclear envelope and membrane-bound organelles.", "Eukaryotes lack ribosomes."], 
+            correct: 2, 
+            explanation: "أهم فرق يميز الـ Eukaryotes (حقيقيات النواة) هو وجود غلاف نووي (Nuclear envelope) وعضيات محاطة بغشاء (membrane-bound organelles). [L1]",
+            difficulty: "easy"
+        },
+        { 
+            question: "The three basic parts of a eukaryotic cell are:", 
+            options: ["Cell wall, plasma membrane, and ribosomes", "Plasma membrane, cytoplasm, and nucleus", "Nucleoid, capsule, and flagella", "Mitochondria, chloroplasts, and Golgi complex"], 
+            correct: 1, 
+            explanation: "الأجزاء الثلاثة الأساسية لأي خلية Eukaryotic هي: غشاء البلازما (plasma membrane)، السيتوبلازم (cytoplasm)، والنواة (nucleus). [L1]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Prokaryotes are divided into two major taxonomic groups (domains). These are:", 
+            options: ["Protists and Fungi", "Archaea and Bacteria", "Plants and Animals", "Bacteria and Eukarya"], 
+            correct: 1, 
+            explanation: "بدائيات النواة (Prokaryotes) بتتقسم لمجموعتين كبار: Archaea (العتائق) و Bacteria (البكتيريا الحقيقية). [L2]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Which of the following is an example of an 'extremophile' belonging to the Domain Archaea?", 
+            options: ["Methanogens and Halophiles", "Escherichia coli", "Cyanobacteria", "Mycoplasma"], 
+            correct: 0, 
+            explanation: "الـ Archaea بتضم كائنات بتعيش في ظروف قاسية (extremophiles) زي الميثانوجينات والـ Halophiles (المحبة للملوحة) والـ Thermophiles. [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Which specific prokaryote is known for lacking a cell wall and containing a genome with fewer than 500 genes?", 
+            options: ["Cyanobacteria", "Saccharomyces cerevisiae", "Mycoplasma", "Escherichia coli"], 
+            correct: 2, 
+            explanation: "الـ Mycoplasma هي بدائيات النواة الوحيدة المعروفة بإن معندهاش جدار خلوي (lack a cell wall). [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Cyanobacteria are complex prokaryotes that contain elaborate arrays of cytoplasmic membranes serving as sites for:", 
+            options: ["Protein synthesis", "Photosynthesis", "Intracellular digestion", "Lipid storage"], 
+            correct: 1, 
+            explanation: "البكتيريا الزرقاء (Cyanobacteria) عندها أغشية سيتوبلازمية معقدة بتقوم بعملية البناء الضوئي (Photosynthesis). [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Which of the following describes the most complex single-celled eukaryotic organisms, such as Vorticella and amoebas?", 
+            options: ["Bacteria", "Archaea", "Protists", "Fungi"], 
+            correct: 2, 
+            explanation: "الـ Protists (الطلائعيات) هي كائنات Eukaryotic وحيدة الخلية بس معقدة جداً، وكل وظائفها بتحصل جوه خلية واحدة زي الأميبا. [L2]",
+            difficulty: "easy"
+        },
+        { 
+            question: "The process by which a fertilized human egg develops into approximately 250 distinct types of specialized cells is called:", 
+            options: ["Replication", "Differentiation", "Transcription", "Self-regulation"], 
+            correct: 1, 
+            explanation: "العملية اللي بتتحول فيها الخلايا الجنينية لخلايا متخصصة (Specialized cells) اسمها التمايز (Differentiation). [L2]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Which of the following model organisms is a widely studied PROKARYOTE?", 
+            options: ["Saccharomyces cerevisiae", "Drosophila melanogaster", "Escherichia coli", "Caenorhabditis elegans"], 
+            correct: 2, 
+            explanation: "بكتيريا Escherichia coli (E. coli) هي الـ Prokaryote الوحيد في قائمة الـ model organisms الستة الأساسيين. [L2]",
+            difficulty: "easy"
+        },
+        { 
+            question: "Which model organism is an invertebrate nematode used extensively to study development and diseases like Diabetes?", 
+            options: ["Danio rerio", "Caenorhabditis elegans", "Mus musculus", "Arabidopsis thaliana"], 
+            correct: 1, 
+            explanation: "دودة الـ Caenorhabditis elegans (C. elegans) هي النموذج الحيواني (nematode) اللي بيُستخدم لدراسة أمراض زي السكر. [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "The 'nude mouse' (Mus musculus) is particularly useful in medical research because it:", 
+            options: ["Has giant chromosomes", "Develops without a thymus gland and accepts human tissue grafts", "Has a transparent body wall", "Is a prokaryote"], 
+            correct: 1, 
+            explanation: "الـ nude mouse مميز في الأبحاث لأنه بيتولد من غير غدة زعترية (thymus gland)، فجهازه المناعي ضعيف وبيقدر يتقبل ترقيع الأنسجة البشرية (human tissue grafts). [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "A researcher is studying DNA repair mechanisms related to colon cancer. Why is E. coli an effective model organism for this study?", 
+            options: ["It has a large genome with complex chromosomes.", "It has a nervous system similar to humans.", "The basic steps of DNA repair and homologous genes (like mutL/MLH1) are present in both.", "It lacks a cell wall."], 
+            correct: 2, 
+            explanation: "بكتيريا E. coli بتُستخدم لدراسة سرطان القولون لأن خطوات إصلاح الـ DNA والجينات المسؤولة عنها (زي mutL اللي يقابله MLH1 في الإنسان) متشابهة. [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "Mutations in the human MLH1 gene lead to a defective protein complex with PMS2, disrupting DNA repair. Clinically, this is primarily associated with:", 
+            options: ["Lynch syndrome (HNPCC)", "Alzheimer disease", "Huntington disease", "Diabetes mellitus"], 
+            correct: 0, 
+            explanation: "الطفرات في جين MLH1 بتسبب متلازمة لينش (Lynch syndrome) أو ما يُعرف بـ HNPCC (سرطان القولون والمستقيم الوراثي). [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "A patient presents with progressive uncontrolled movements and cognitive decline. Genetic testing reveals a CAG trinucleotide repeat expansion (>35 times) in the HTT gene. What is the pattern of inheritance for this disorder?", 
+            options: ["Autosomal recessive", "X-linked dominant", "Autosomal dominant", "Mitochondrial inheritance"], 
+            correct: 2, 
+            explanation: "مرض هنتنغتون (Huntington disease) بينتقل وراثياً كصفة جسدية سائدة (Autosomal dominant pattern). [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "A patient experiences progressive ataxia, muscle stiffness, and REM sleep behavior disorder. The underlying genetic defect is an expanded CAG segment in the ATXN3 gene. Which cellular system does the affected enzyme (ataxin-3) normally regulate?", 
+            options: ["The ubiquitin-proteasome system", "The DNA mismatch repair system", "The electron transport chain", "The photosynthetic pathway"], 
+            correct: 0, 
+            explanation: "مرض ماتشادو-جوزيف (Machado-Joseph) بيحصل بسبب طفرة في جين ATXN3 اللي بينتج إنزيم ataxin-3. الإنزيم ده جزء من الـ ubiquitin-proteasome system اللي بيتخلص من البروتينات التالفة. [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "A patient complains of difficulty releasing their grip on a doorknob and temporary locking of their jaw. Genetic analysis shows a mutation in the DMPK gene on chromosome 19. What is the most likely diagnosis?", 
+            options: ["Huntington disease", "Alzheimer disease", "Myotonic dystrophy type 1", "Machado-Joseph disease"], 
+            correct: 2, 
+            explanation: "الأعراض دي (تشنج العضلات وصعوبة ارتخائها - myotonia) مع طفرة في جين DMPK على كروموسوم 19 بتؤكد تشخيص الـ Myotonic dystrophy type 1. [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "Early-onset familial Alzheimer disease can be caused by mutations in genes encoding presenilin 1, presenilin 2, and the beta-amyloid precursor protein (APP). The APP gene is located on which chromosome?", 
+            options: ["Chromosome 1", "Chromosome 14", "Chromosome 19", "Chromosome 21"], 
+            correct: 3, 
+            explanation: "جين الـ APP موجود على كروموسوم 21، وده بيفسر ليه مرضى متلازمة داون (اللي عندهم 3 نسخ من كروموسوم 21) عندهم نسبة إصابة أعلى بألزهايمر. [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "The progressive signs and symptoms of Alzheimer disease are largely attributed to the buildup of which toxic substance in the brain?", 
+            options: ["Huntingtin protein", "Amyloid beta peptide plaques", "Ataxin-3", "Excess insulin"], 
+            correct: 1, 
+            explanation: "مرض ألزهايمر بيتميز بتراكم الـ amyloid beta peptide اللي بيعمل تكتلات سامة في المخ اسمها amyloid plaques. [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "In Insulin-Dependent Diabetes Mellitus (IDDM), what is the primary pathological mechanism leading to insulin deficiency?", 
+            options: ["Autoimmune destruction of pancreatic islet beta cells", "Insulin resistance in skeletal muscle", "Hypersecretion of glucagon", "Lack of dietary sugar"], 
+            correct: 0, 
+            explanation: "مرض السكر المعتمد على الأنسولين (IDDM - Type 1) بيحصل بسبب تدمير مناعي ذاتي (autoimmune destruction) لخلايا بيتا في البنكرياس. [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "In insulin-resistant diabetes, which immune-related factor can interfere with the normal physiological process of insulin binding?", 
+            options: ["Autoreactive T cells destroying islet cells", "Antibodies to insulin receptors", "Hyperactive presenilin enzymes", "Accumulation of polyglutamine"], 
+            correct: 1, 
+            explanation: "في السكر المقاوم للأنسولين (insulin-resistant diabetes)، ممكن تتكون أجسام مضادة (Antibodies) بتمسك في مستقبلات الأنسولين وبتعطل شغله. [L2]",
+            difficulty: "hard"
+        },
+        { 
+            question: "Which of the following represents the typical size range of a eukaryotic cell?", 
+            options: ["1 to 5 μm", "10 to 30 μm", "20 to 300 nm", "0.2 μm"], 
+            correct: 1, 
+            explanation: "الخلايا حقيقية النواة (Eukaryotic cells) حجمها الطبيعي بيتراوح بين 10 لـ 30 ميكرومتر، وهي أكبر من بدائيات النواة (1-5 ميكرومتر). [L2]",
+            difficulty: "easy"
+        },
+        { 
+            question: "An infectious agent is discovered that consists entirely of a small, circular RNA molecule without ANY protein coating. This agent is best classified as a:", 
+            options: ["Virus", "Bacteria", "Viroid", "Protist"], 
+            correct: 2, 
+            explanation: "الـ Viroid هو كائن مُعدي بيتكون من RNA دائري صغير من غير أي غلاف بروتيني (no protein coating). [L2]",
+            difficulty: "medium"
+        },
+        { 
+            question: "Comparing viruses and cells, which of the following properties is TRUE?", 
+            options: ["Viruses multiply by binary fission or mitosis.", "Viruses contain both DNA and RNA simultaneously.", "Cells lack ribosomes.", "Viruses contain either DNA or RNA, while cells contain both DNA and RNA."], 
+            correct: 3, 
+            explanation: "الفيروسات بتحتوي على DNA أو RNA (واحد منهم بس)، بينما الخلايا العادية بتحتوي على النوعين مع بعض. [L2]",
+            difficulty: "medium"
+        }
+    ];
+
+    let userAnswers = [];
+    let questionQueue = [];
+    let currentQueueIndex = 0;
+    let timer;
+    const timePerQuestion = 60; 
+
+    document.getElementById('quiz-title-display').innerText = quizTitle;
+
+    function startQuiz() {
+        if(mcqQuestions.length === 0) {
+            alert("No questions found! Please add questions to the array.");
+            return;
+        }
+
+        const selectedDifficulty = document.getElementById('difficulty-filter').value;
+        questionQueue = [];
+        
+        // Filter questions based on selected difficulty
+        mcqQuestions.forEach((q, index) => {
+            if (selectedDifficulty === 'all' || q.difficulty === selectedDifficulty) {
+                questionQueue.push(index);
+            }
+        });
+
+        if(questionQueue.length === 0) {
+            alert("No questions available for the selected difficulty level.");
+            return;
+        }
+
+        userAnswers = new Array(mcqQuestions.length).fill(null);
+        currentQueueIndex = 0;
+        
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        resetState();
+        let realIndex = questionQueue[currentQueueIndex];
+        const currentQuestion = mcqQuestions[realIndex];
+        
+        document.getElementById('question-text').innerText = "Q" + (currentQueueIndex + 1) + ". " + currentQuestion.question;
+        
+        // Set Difficulty Badge
+        const badge = document.getElementById('difficulty-badge');
+        badge.innerText = currentQuestion.difficulty || "unrated";
+        badge.className = "badge"; // Reset classes
+        if(currentQuestion.difficulty === 'easy') badge.classList.add('badge-easy');
+        else if(currentQuestion.difficulty === 'medium') badge.classList.add('badge-medium');
+        else if(currentQuestion.difficulty === 'hard') badge.classList.add('badge-hard');
+        
+        const progressPercent = ((currentQueueIndex) / questionQueue.length) * 100;
+        document.getElementById('progress').style.width = progressPercent + "%";
+
+        document.getElementById('prev-btn').style.display = currentQueueIndex > 0 ? 'block' : 'none';
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        currentQuestion.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.classList.add('option-btn');
+            button.onclick = () => selectAnswer(index, button);
+            container.appendChild(button);
+        });
+
+        if (userAnswers[realIndex] !== null) {
+            document.getElementById('timer').innerText = '⏳ Saved Answer';
+            restoreAnswerState();
+        } else {
+            startTimer();
+        }
+    }
+
+    function resetState() {
+        clearInterval(timer);
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('explanation').style.display = 'none';
+        document.getElementById('timer').innerText = '';
+    }
+
+    function startTimer() {
+        let timeLeft = timePerQuestion;
+        document.getElementById('timer').innerText = `⏳ ${timeLeft}s`;
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').innerText = `⏳ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                let realIndex = questionQueue[currentQueueIndex];
+                userAnswers[realIndex] = -1; // -1 means timeout
+                playSound('wrong');
+                restoreAnswerState();
+            }
+        }, 1000);
+    }
+
+    function selectAnswer(selectedIndex, btn) {
+        clearInterval(timer);
+        let realIndex = questionQueue[currentQueueIndex];
+        userAnswers[realIndex] = selectedIndex;
+        
+        const currentQuestion = mcqQuestions[realIndex];
+        if (selectedIndex === currentQuestion.correct) {
+            playSound('correct');
+        } else {
+            playSound('wrong');
+        }
+
+        restoreAnswerState();
+    }
+
+    function restoreAnswerState() {
+        let realIndex = questionQueue[currentQueueIndex];
+        const currentQuestion = mcqQuestions[realIndex];
+        const correctIndex = currentQuestion.correct;
+        const answeredIndex = userAnswers[realIndex];
+        const allButtons = document.querySelectorAll('.option-btn');
+
+        if (answeredIndex !== -1 && answeredIndex !== null) {
+            if (answeredIndex === correctIndex) {
+                allButtons[answeredIndex].classList.add('correct');
+            } else {
+                allButtons[answeredIndex].classList.add('wrong');
+                allButtons[correctIndex].classList.add('correct');
+            }
+        } else if (answeredIndex === -1) {
+            allButtons[correctIndex].classList.add('correct');
+        }
+
+        disableOptions();
+        showExplanation();
+        
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.style.display = 'block';
+        nextBtn.innerText = (currentQueueIndex === questionQueue.length - 1) ? "Finish Exam 🏁" : "Next Question ➡️";
+    }
+
+    function disableOptions() {
+        const allButtons = document.querySelectorAll('.option-btn');
+        allButtons.forEach(button => button.classList.add('disabled'));
+    }
+
+    function showExplanation() {
+        let realIndex = questionQueue[currentQueueIndex];
+        const currentQuestion = mcqQuestions[realIndex];
+        document.getElementById('explanation-text').innerText = currentQuestion.explanation;
+        document.getElementById('explanation').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        if (currentQueueIndex < questionQueue.length - 1) {
+            currentQueueIndex++;
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQueueIndex > 0) {
+            currentQueueIndex--;
+            loadQuestion();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        
+        let finalScore = 0;
+        let wrongIndices = [];
+        
+        // Calculate score based ONLY on the questions in the current queue
+        questionQueue.forEach((realIndex) => {
+            if (userAnswers[realIndex] === mcqQuestions[realIndex].correct) {
+                finalScore++;
+            } else {
+                wrongIndices.push(realIndex);
+            }
+        });
+
+        const percentage = Math.round((finalScore / questionQueue.length) * 100);
+        document.getElementById('final-score').innerText = percentage + "%";
+        
+        let rank = "Fail (راسب)";
+        if (percentage >= 90) rank = "Excellent (ممتاز) 🌟";
+        else if (percentage >= 80) rank = "Very Good (جيد جداً) 👏";
+        else if (percentage >= 65) rank = "Good (جيد) 👍";
+        else if (percentage >= 50) rank = "Pass (مقبول) 😐";
+        
+        document.getElementById('rank-text').innerText = rank;
+
+        const retryContainer = document.getElementById('retry-container');
+        if (wrongIndices.length > 0) {
+            retryContainer.style.display = 'block';
+            document.getElementById('retry-btn').innerText = `أعد محاولة الأسئلة الخاطئة (${wrongIndices.length}) 🔄`;
+            window.currentWrongIndices = wrongIndices;
+        } else {
+            retryContainer.style.display = 'none';
+        }
+    }
+
+    function retryMistakes() {
+        questionQueue = window.currentWrongIndices;
+        currentQueueIndex = 0;
+        
+        questionQueue.forEach(idx => userAnswers[idx] = null);
+        
+        document.getElementById('result-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function playSound(type) {
+        const id = type === 'correct' ? 'sound-correct' : 'sound-wrong';
+        document.getElementById(id).play().catch(e => {});
+    }
+</script>
+</body>
+</html>
